@@ -289,7 +289,7 @@ public class Aerolinea
 
         
         for (Avion avion2 : this.getAviones()) {
-            if (avion != null && avion.getNombre().equals(nombreAvion)) {
+            if (avion2 != null && avion2.getNombre().equals(nombreAvion)) {
                 avion = avion2;
                 break;
             }
@@ -319,10 +319,10 @@ public class Aerolinea
      * @throws Exception Se lanza esta excepción para indicar que no se pudieron vender los tiquetes por algún otro motivo
      */
 public int venderTiquetes(String identificadorCliente, String fecha, String codigoRuta, int cantidad)throws VueloSobrevendidoException, Exception {
-    int r = -1;
+    int s = -1;
 
     Cliente cliente = this.getCliente(identificadorCliente);
-    Vuelo vuelo = this.getVuelo(fecha, codigoRuta);
+    Vuelo vuelo = this.getVuelo(codigoRuta, fecha);
     
     
     
@@ -331,24 +331,27 @@ public int venderTiquetes(String identificadorCliente, String fecha, String codi
     }
 
 
-    if (vuelo.getAvion().getCapacidad() + cantidad > vuelo.getAvion().getCapacidad()) {
+    int ocupados = vuelo.getTiquetes().size();
+    if (ocupados + cantidad > vuelo.getAvion().getCapacidad()) {
         throw new VueloSobrevendidoException(vuelo);
     }
+    
+    
     CalculadoraTarifas calc = null;
 
-    if (fecha.substring(5, 7).equals("01") || fecha.substring(5, 7).equals("07")) {
+    int mes = Integer.parseInt(fecha.substring(5, 7));
+    if ((mes >= 1 && mes <= 5) || (mes >= 9 && mes <= 11)) {
         calc = new CalculadoraTarifasTemporadaBaja();
-    } 
-    
+    }
     else {
         calc = new CalculadoraTarifasTemporadaAlta();
     }
     
     
 
-    r = vuelo.venderTiquetes(cliente, calc, cantidad);
+    s = vuelo.venderTiquetes(cliente, calc, cantidad);
     
-    return r;
+    return s;
 }
     
 
@@ -358,15 +361,13 @@ public int venderTiquetes(String identificadorCliente, String fecha, String codi
      * @param codigoRuta El código de la ruta que recorrió el vuelo
      */
 public void registrarVueloRealizado(String fecha, String codigoRuta) {
-    Vuelo v1 = this.getVuelo(fecha, codigoRuta);
+    Vuelo v1 = this.getVuelo(codigoRuta, fecha);
 
-
-    for (Tiquete tiquete : v1.getTiquetes().values()) {
-        
-        
-        tiquete.marcarComoUsado();
+    if (v1 != null) {
+        for (Tiquete tiquete : v1.getTiquetes().values()) {
+            tiquete.marcarComoUsado();
+        }
     }
-
 }
     /**
      * Calcula cuánto valen los tiquetes que ya compró un cliente dado y que todavía no ha utilizado
