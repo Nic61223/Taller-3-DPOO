@@ -46,6 +46,24 @@ public int calcularValorTotalTiquetes(){
  
     return total;
 }
+
+
+
+public int calcularValorTotalTiquetesNO(){
+    int total = 0;
+   
+        
+        for (Tiquete tiquete : listaNoUsados) {
+            if (tiquete != null)
+                total += tiquete.getTarifa();
+            else
+                total += 0;
+        }
+        
+        
+ 
+    return total;
+}
 public void usarTiquete(Vuelo vuelo) {
 	
 	for (Tiquete tiquete : listaNoUsados) {
